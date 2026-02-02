@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link, useLocation } from 'react-router-dom';
 
 const navLinks = [
-  { href: '#services', label: 'What I Do' },
-  { href: '#case-studies', label: 'Case Studies' },
-  { href: '#philosophy', label: 'Philosophy' },
-  { href: '#about', label: 'About' },
+  { href: '#services', label: 'What I Do', isAnchor: true },
+  { href: '/case-studies', label: 'Case Studies', isAnchor: false },
+  { href: '/blog', label: 'Blog', isAnchor: false },
+  { href: '#philosophy', label: 'Philosophy', isAnchor: true },
+  { href: '#about', label: 'About', isAnchor: true },
 ];
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +25,11 @@ export function Header() {
   }, []);
 
   const scrollToSection = (href: string) => {
+    if (!isHomePage) {
+      // Navigate to home page with hash
+      window.location.href = '/' + href;
+      return;
+    }
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -53,13 +62,23 @@ export function Header() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <button
-                key={link.href}
-                onClick={() => scrollToSection(link.href)}
-                className="nav-link"
-              >
-                {link.label}
-              </button>
+              link.isAnchor ? (
+                <button
+                  key={link.href}
+                  onClick={() => scrollToSection(link.href)}
+                  className="nav-link"
+                >
+                  {link.label}
+                </button>
+              ) : (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className="nav-link"
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
             <button
               onClick={() => scrollToSection('#contact')}
@@ -100,13 +119,24 @@ export function Header() {
           >
             <div className="py-4 space-y-3">
               {navLinks.map((link) => (
-                <button
-                  key={link.href}
-                  onClick={() => scrollToSection(link.href)}
-                  className="block w-full text-left px-4 py-2 text-foreground hover:bg-secondary rounded-md transition-colors"
-                >
-                  {link.label}
-                </button>
+                link.isAnchor ? (
+                  <button
+                    key={link.href}
+                    onClick={() => scrollToSection(link.href)}
+                    className="block w-full text-left px-4 py-2 text-foreground hover:bg-secondary rounded-md transition-colors"
+                  >
+                    {link.label}
+                  </button>
+                ) : (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full text-left px-4 py-2 text-foreground hover:bg-secondary rounded-md transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                )
               ))}
               <div className="px-4 pt-2">
                 <button
