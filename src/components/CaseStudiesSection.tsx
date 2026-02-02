@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { ChevronDown, Building2, GraduationCap, Globe } from 'lucide-react';
+import { ChevronDown, Building2, GraduationCap, Globe, ArrowRight } from 'lucide-react';
 
 interface CaseStudy {
   id: string;
@@ -272,6 +273,22 @@ export function CaseStudiesSection() {
             </motion.div>
           ))}
         </div>
+
+        {/* See All Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="text-center mt-12"
+        >
+          <Link
+            to="/case-studies"
+            className="inline-flex items-center gap-2 btn-secondary"
+          >
+            See All Case Studies
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
