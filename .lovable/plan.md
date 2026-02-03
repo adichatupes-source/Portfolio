@@ -1,217 +1,98 @@
 
-# Blog Section & Dynamic Content Architecture
+
+# Notion API Integration for Dynamic Blog & Case Studies
 
 ## Overview
-Adding a blog system and restructuring case studies to support dynamic content with pagination. The blog design will match the existing portfolio's Classic Navy & White aesthetic — using the same typography (Playfair Display headings, Inter body), card styles, and color palette already established.
+Connecting your Notion databases to the portfolio so blog posts and case studies are fetched dynamically. This requires storing your API key securely, creating an Edge Function to fetch from Notion, and updating the frontend to use React Query.
 
 ---
 
-## Design Approach
+## Security First: Storing Your Notion API Key
 
-The blog will feel like a natural extension of the portfolio, using:
-- Same navy (#1e3a5f) headers and accents
-- Same `card-elevated` styling for blog cards
-- Same section headers and spacing patterns
-- Consistent button styles (`btn-primary`, `btn-secondary`)
+Your Notion Integration Key must be stored as a secret (never in code). After this plan is approved:
+1. I'll prompt you to add the secret securely via a button
+2. The key will be stored encrypted and only accessible to the Edge Function
 
 ---
 
-## New Pages Structure
-
-| Route | Purpose |
-|-------|---------|
-| `/` | Homepage with preview sections |
-| `/blog` | Blog listing page with pagination |
-| `/blog/:slug` | Individual blog post detail |
-| `/case-studies` | Case studies listing with pagination |
-| `/case-studies/:slug` | Individual case study detail |
-
----
-
-## Homepage Updates
-
-### New Blog Preview Section
-Positioned between Philosophy and Credibility sections:
-- Section title: "Insights & Perspectives"
-- Subtitle: "Thoughts on growth, GTM strategy, and building revenue engines"
-- Display 3 latest blog posts in a responsive grid
-- "See All Insights" button linking to `/blog`
-
-### Case Studies Section Update
-- Keep existing expandable preview (3 cases)
-- Add "See All Case Studies" button below, linking to `/case-studies`
-
----
-
-## Blog Card Design (Matching Portfolio Style)
+## Architecture
 
 ```text
-+------------------------------------------+
-|  [Featured Image - 16:9 AspectRatio]     |
-|  object-cover, rounded-lg                |
-+------------------------------------------+
-|  CATEGORY TAG (primary/10 bg)            |
-|                                          |
-|  Blog Title (Playfair Display)           |
-|                                          |
-|  Short excerpt text in slate color       |
-|  limited to 2-3 lines...                 |
-|                                          |
-|  📷 Author Name  •  Jan 15, 2024         |
-+------------------------------------------+
++------------------+       +----------------------+       +------------------+
+|   React App      |  -->  |  Supabase Edge       |  -->  |   Notion API     |
+|   (Frontend)     |       |  Function            |       |   (Databases)    |
++------------------+       +----------------------+       +------------------+
+        |                           |                            |
+   React Query              Fetches & transforms          Blog DB + 
+   caches data              Notion responses              Case Studies DB
 ```
-
-Uses existing `card-elevated` class with hover shadow effect.
 
 ---
 
-## Blog Listing Page (`/blog`)
+## Notion Database Structure Required
 
-### Header Section
-- Navy gradient background (matching hero)
-- Large serif title: "Insights & Perspectives"
-- Subtitle describing the blog focus
+Your Notion databases should have these properties:
 
-### Content Grid
-- Responsive: 1 column mobile, 2 columns tablet, 3 columns desktop
-- Blog cards with featured images
-- Pagination controls at bottom
+### Blog Database (ID: 5f5ac7e317784a0893c08fb21adeec08)
+| Property | Notion Type | Maps To |
+|----------|-------------|---------|
+| Title | Title | title |
+| Slug | Text | slug |
+| Excerpt | Text | excerpt |
+| Content | Text (Markdown) | content |
+| Featured Image | URL or Files | featuredImage |
+| Category | Select | category |
+| Author | Text | author.name |
+| Published Date | Date | publishedDate |
+| Reading Time | Text | readingTime |
+| Status | Select | (filter: Published only) |
 
-### Pagination Component
-- "Previous" / "Next" buttons
-- Page numbers for quick navigation
-- Shows 6 posts per page
+### Case Studies Database (ID: 2fc0b3d316a080dfad8a00a9ff73a0d1)
+| Property | Notion Type | Maps To |
+|----------|-------------|---------|
+| Title | Title | title |
+| Slug | Text | slug |
+| Icon | Select | icon (Building2, GraduationCap, Globe) |
+| Industry | Text | industry |
+| Company | Text | company |
+| Context | Text | context |
+| Challenges | Text (multi-line) | challenge[] |
+| Approach | Text | approach |
+| Actions | Text (multi-line) | actions[] |
+| Outcomes | Text (multi-line) | outcomes[] |
+| What This Proves | Text | proves |
+| Featured Image | URL or Files | featuredImage |
+| Status | Select | (filter: Published only) |
 
----
-
-## Blog Detail Page (`/blog/:slug`)
-
-### Layout
-- Back navigation: "← Back to Insights"
-- Category tag
-- Large serif title
-- Author info with avatar and date
-- Full-width featured image (16:9 ratio)
-- Content area: centered, max-width 720px for readability
-- Proper typography for headings, paragraphs, lists
-
----
-
-## Case Studies Pages
-
-### Listing Page (`/case-studies`)
-- Similar hero header style
-- Cards showing: industry icon, company, title, brief context
-- Each card links to detail page
-
-### Detail Page (`/case-studies/:slug`)
-- Full structured layout matching current expandable content
-- Sections: Context, Challenge, Approach, Actions, Outcomes, What This Proves
-- Professional presentation with clear visual hierarchy
+**Note**: Multi-line text fields (Challenges, Actions, Outcomes) should use newlines to separate items.
 
 ---
 
-## Navigation Updates
+## Implementation Steps
 
-Current:
-```
-What I Do | Case Studies | Philosophy | About
-```
+### Step 1: Store Notion Secret
+Add `NOTION_API_KEY` as an encrypted secret
 
-Updated:
-```
-What I Do | Case Studies | Blog | Philosophy | About
-```
+### Step 2: Create Edge Function
+Create `supabase/functions/fetch-notion-content/index.ts`:
+- Accepts `type` parameter (blogs or case-studies)
+- Fetches from appropriate Notion database
+- Transforms Notion response to our data structure
+- Returns formatted JSON
 
-- "Case Studies" links to `/case-studies`
-- "Blog" links to `/blog`
+### Step 3: Create React Hooks
+Create custom hooks that wrap React Query:
+- `useNotionBlogs()` - fetches blog posts
+- `useNotionCaseStudies()` - fetches case studies
+- Both handle loading states, caching, and errors
 
----
-
-## Dynamic Data Architecture (Notion-Ready)
-
-### Data Interfaces
-
-**BlogPost:**
-- id, slug, title, excerpt
-- content (markdown)
-- featuredImage, category
-- author (name, avatar)
-- publishedDate, readingTime
-
-**CaseStudy:**
-- id, slug, icon, industry, company
-- title, context, challenge[], approach
-- actions[], outcomes[], proves
-- featuredImage (optional)
-
-### Data Files
-- `src/data/blogs.ts` — Sample blog posts array
-- `src/data/caseStudies.ts` — Case studies extracted from current component
-
-### Pagination Hook
-Reusable `usePagination` hook:
-- Current page state
-- Items per page configuration
-- Total pages calculation
-- Navigation functions
-
----
-
-## Notion Integration Guide
-
-After the portfolio is live, you can connect to Notion for dynamic content:
-
-### Step 1: Create Notion Databases
-
-**Blog Database:**
-| Property | Type |
-|----------|------|
-| Title | Title |
-| Slug | Text |
-| Excerpt | Text |
-| Content | Text (Markdown) |
-| Featured Image | Files |
-| Category | Select |
-| Author | Text |
-| Published Date | Date |
-| Status | Select (Draft/Published) |
-
-**Case Studies Database:**
-| Property | Type |
-|----------|------|
-| Title | Title |
-| Slug | Text |
-| Industry | Select |
-| Company | Text |
-| Context | Text |
-| Challenges | Text |
-| Approach | Text |
-| Actions | Text |
-| Outcomes | Text |
-| What This Proves | Text |
-| Featured Image | Files |
-| Status | Select |
-
-### Step 2: Set Up Notion Integration
-1. Create integration at notion.so/my-integrations
-2. Share databases with the integration
-3. Note the Integration Token and Database IDs
-
-### Step 3: Create Backend Function
-A Supabase Edge Function will:
-- Fetch data from Notion API
-- Transform to your data structure
-- Cache for performance
-
-### Step 4: Connect Frontend
-Replace static data imports with API calls using React Query:
-```typescript
-const { data: blogs } = useQuery({
-  queryKey: ['blogs', page],
-  queryFn: () => fetchBlogsFromNotion(page)
-});
-```
+### Step 4: Update Pages
+Modify existing pages to use dynamic data:
+- `Blog.tsx` - use `useNotionBlogs()`
+- `BlogPost.tsx` - use `useNotionBlogs()` and find by slug
+- `CaseStudies.tsx` - use `useNotionCaseStudies()`
+- `CaseStudyDetail.tsx` - use `useNotionCaseStudies()` and find by slug
+- `BlogPreviewSection.tsx` - use `useNotionBlogs()` for homepage preview
 
 ---
 
@@ -219,45 +100,84 @@ const { data: blogs } = useQuery({
 
 | File | Purpose |
 |------|---------|
-| `src/data/blogs.ts` | Sample blog posts with placeholder content |
-| `src/data/caseStudies.ts` | Case studies data extracted from current component |
-| `src/hooks/usePagination.ts` | Reusable pagination logic |
-| `src/components/BlogCard.tsx` | Blog card component |
-| `src/components/BlogPreviewSection.tsx` | Homepage blog preview |
-| `src/components/Pagination.tsx` | Pagination controls component |
-| `src/pages/Blog.tsx` | Blog listing page |
-| `src/pages/BlogPost.tsx` | Individual blog post page |
-| `src/pages/CaseStudies.tsx` | Case studies listing page |
-| `src/pages/CaseStudyDetail.tsx` | Individual case study page |
+| `supabase/functions/fetch-notion-content/index.ts` | Edge Function to fetch from Notion |
+| `supabase/config.toml` | Configure the edge function |
+| `src/hooks/useNotionContent.ts` | React Query hooks for fetching content |
 
 ## Files to Modify
 
 | File | Changes |
 |------|---------|
-| `src/App.tsx` | Add new routes |
-| `src/components/Header.tsx` | Add Blog link, update Case Studies link |
-| `src/components/CaseStudiesSection.tsx` | Add "See All" button |
-| `src/pages/Index.tsx` | Add BlogPreviewSection |
+| `src/pages/Blog.tsx` | Use `useNotionBlogs()` instead of static import |
+| `src/pages/BlogPost.tsx` | Use `useNotionBlogs()` for single post |
+| `src/pages/CaseStudies.tsx` | Use `useNotionCaseStudies()` |
+| `src/pages/CaseStudyDetail.tsx` | Use `useNotionCaseStudies()` for single study |
+| `src/components/BlogPreviewSection.tsx` | Use `useNotionBlogs()` |
+| `src/components/CaseStudiesSection.tsx` | Use `useNotionCaseStudies()` |
 
 ---
 
-## Sample Blog Content
+## Edge Function Details
 
-Three sample posts matching the WCT Pay content style:
-1. "The Enterprise Shift to OTC Settlement" — Fintech/payments focus
-2. "Building Predictable Demand Engines" — Growth strategy
-3. "Why GTM Thinking Matters Before Execution" — Thought leadership
+The Edge Function will:
+
+1. **Authenticate** with Notion using your API key
+2. **Query** the appropriate database based on the `type` parameter
+3. **Filter** to only return items with Status = "Published"
+4. **Sort** by Published Date (newest first for blogs)
+5. **Transform** Notion's complex response format to our simple interfaces
+6. **Handle** errors gracefully with meaningful messages
+
+### Notion API Specifics
+- Uses `@notionhq/client` for type-safe API calls
+- Handles Notion's nested property structure
+- Extracts text from rich text arrays
+- Parses multi-line fields into arrays
 
 ---
 
-## Implementation Order
+## Fallback Strategy
 
-1. Create data files with sample content
-2. Build pagination hook
-3. Create BlogCard and Pagination components
-4. Build Blog listing and detail pages
-5. Build CaseStudies listing and detail pages
-6. Update App.tsx with new routes
-7. Update Header navigation
-8. Add BlogPreviewSection to homepage
-9. Add "See All" buttons to homepage sections
+Keep the static data files as fallbacks:
+- If Notion API fails, show cached/static data
+- Display loading skeletons while fetching
+- Show error message if both fail
+
+---
+
+## Caching Strategy
+
+React Query configuration:
+- `staleTime`: 5 minutes (data considered fresh)
+- `cacheTime`: 30 minutes (keep in memory)
+- Automatic refetch on window focus (optional)
+
+This reduces API calls while keeping content relatively fresh.
+
+---
+
+## Testing After Implementation
+
+1. Add test content to your Notion databases
+2. Verify the Edge Function returns correct data
+3. Check blog listing page loads dynamically
+4. Verify case studies page loads dynamically
+5. Test individual detail pages
+6. Confirm homepage previews work
+
+---
+
+## Setting Up Your Notion Databases
+
+If you haven't already set up your Notion databases with the exact properties:
+
+### For Blog Database:
+1. Create properties matching the table above
+2. Add a "Status" select with "Published" and "Draft" options
+3. Add a test blog post with Status = "Published"
+
+### For Case Studies Database:
+1. Create properties matching the table above
+2. For Challenges/Actions/Outcomes, put each item on a new line
+3. Add a test case study with Status = "Published"
+
