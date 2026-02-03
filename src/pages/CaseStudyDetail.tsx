@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Building2, GraduationCap, Globe, CheckCircle2 } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { caseStudies } from '@/data/caseStudies';
+import { CaseStudyDetailSkeleton } from '@/components/ContentSkeleton';
+import { useNotionCaseStudy } from '@/hooks/useNotionContent';
 
 const iconMap: Record<string, React.ElementType> = {
   Building2,
@@ -13,9 +14,21 @@ const iconMap: Record<string, React.ElementType> = {
 
 export default function CaseStudyDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const study = caseStudies.find((s) => s.slug === slug);
+  const { data: study, isLoading, notFound } = useNotionCaseStudy(slug);
 
-  if (!study) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="pt-32 pb-20">
+          <CaseStudyDetailSkeleton />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (notFound || !study) {
     return <Navigate to="/case-studies" replace />;
   }
 

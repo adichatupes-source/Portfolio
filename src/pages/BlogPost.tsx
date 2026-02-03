@@ -5,15 +5,12 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
-import { blogPosts } from '@/data/blogs';
+import { BlogPostSkeleton } from '@/components/ContentSkeleton';
+import { useNotionBlogPost } from '@/hooks/useNotionContent';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
-  const post = blogPosts.find((p) => p.slug === slug);
-
-  if (!post) {
-    return <Navigate to="/blog" replace />;
-  }
+  const { data: post, isLoading, notFound } = useNotionBlogPost(slug);
 
   // Convert markdown-like content to paragraphs
   const renderContent = (content: string) => {
@@ -93,6 +90,22 @@ export default function BlogPost() {
 
     return elements;
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="pt-32 pb-20">
+          <BlogPostSkeleton />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (notFound || !post) {
+    return <Navigate to="/blog" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-background">
