@@ -3,10 +3,12 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { BlogCard } from '@/components/BlogCard';
-import { blogPosts } from '@/data/blogs';
+import { BlogCardSkeleton } from '@/components/ContentSkeleton';
+import { useNotionBlogs } from '@/hooks/useNotionContent';
 
 export function BlogPreviewSection() {
   const { ref, isVisible } = useScrollAnimation<HTMLElement>();
+  const { data: blogPosts = [], isLoading } = useNotionBlogs();
   
   // Get the 3 most recent blog posts
   const latestPosts = blogPosts.slice(0, 3);
@@ -29,16 +31,20 @@ export function BlogPreviewSection() {
 
         {/* Blog Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {latestPosts.map((post, index) => (
-            <motion.div
-              key={post.id}
-              initial={{ opacity: 0, y: 40 }}
-              animate={isVisible ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: index * 0.15 }}
-            >
-              <BlogCard post={post} />
-            </motion.div>
-          ))}
+          {isLoading ? (
+            <BlogCardSkeleton count={3} />
+          ) : (
+            latestPosts.map((post, index) => (
+              <motion.div
+                key={post.id}
+                initial={{ opacity: 0, y: 40 }}
+                animate={isVisible ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: index * 0.15 }}
+              >
+                <BlogCard post={post} />
+              </motion.div>
+            ))
+          )}
         </div>
 
         {/* See All Button */}
