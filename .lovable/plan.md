@@ -1,17 +1,9 @@
 
 
-# Notion API Integration for Dynamic Blog & Case Studies
+# Cloudflare Worker Integration for Notion API
 
 ## Overview
-Connecting your Notion databases to the portfolio so blog posts and case studies are fetched dynamically. This requires storing your API key securely, creating an Edge Function to fetch from Notion, and updating the frontend to use React Query.
-
----
-
-## Security First: Storing Your Notion API Key
-
-Your Notion Integration Key must be stored as a secret (never in code). After this plan is approved:
-1. I'll prompt you to add the secret securely via a button
-2. The key will be stored encrypted and only accessible to the Edge Function
+Setting up a Cloudflare Worker to act as a secure proxy between your portfolio and Notion's API. This keeps your API key secret while allowing the frontend to fetch dynamic content.
 
 ---
 
@@ -19,165 +11,276 @@ Your Notion Integration Key must be stored as a secret (never in code). After th
 
 ```text
 +------------------+       +----------------------+       +------------------+
-|   React App      |  -->  |  Supabase Edge       |  -->  |   Notion API     |
-|   (Frontend)     |       |  Function            |       |   (Databases)    |
+|   React App      |  -->  |  Cloudflare Worker   |  -->  |   Notion API     |
+|   (Frontend)     |       |  (Free Tier)         |       |   (Databases)    |
 +------------------+       +----------------------+       +------------------+
         |                           |                            |
-   React Query              Fetches & transforms          Blog DB + 
-   caches data              Notion responses              Case Studies DB
+   React Query              Stores API key                Blog DB + 
+   caches data              as secret                     Case Studies DB
 ```
 
 ---
 
-## Notion Database Structure Required
+## What You'll Need to Do (Outside Lovable)
 
-Your Notion databases should have these properties:
+### Step 1: Create Cloudflare Account
+1. Go to dash.cloudflare.com and sign up (free)
+2. Navigate to Workers & Pages
+3. Click "Create Worker"
+4. Name it: `notion-proxy`
 
-### Blog Database (ID: 5f5ac7e317784a0893c08fb21adeec08)
-| Property | Notion Type | Maps To |
-|----------|-------------|---------|
-| Title | Title | title |
-| Slug | Text | slug |
-| Excerpt | Text | excerpt |
-| Content | Text (Markdown) | content |
-| Featured Image | URL or Files | featuredImage |
-| Category | Select | category |
-| Author | Text | author.name |
-| Published Date | Date | publishedDate |
-| Reading Time | Text | readingTime |
-| Status | Select | (filter: Published only) |
+### Step 2: Add Worker Code
+I'll provide the exact code to paste into the Cloudflare Worker editor
 
-### Case Studies Database (ID: 2fc0b3d316a080dfad8a00a9ff73a0d1)
-| Property | Notion Type | Maps To |
-|----------|-------------|---------|
-| Title | Title | title |
-| Slug | Text | slug |
-| Icon | Select | icon (Building2, GraduationCap, Globe) |
-| Industry | Text | industry |
-| Company | Text | company |
-| Context | Text | context |
-| Challenges | Text (multi-line) | challenge[] |
-| Approach | Text | approach |
-| Actions | Text (multi-line) | actions[] |
-| Outcomes | Text (multi-line) | outcomes[] |
-| What This Proves | Text | proves |
-| Featured Image | URL or Files | featuredImage |
-| Status | Select | (filter: Published only) |
+### Step 3: Add Your Notion API Key
+1. In the Worker settings, go to "Variables"
+2. Add a secret: `NOTION_API_KEY` = your key
+3. Also add: `BLOG_DATABASE_ID` = `5f5ac7e317784a0893c08fb21adeec08`
+4. And: `CASE_STUDIES_DATABASE_ID` = `2fc0b3d316a080dfad8a00a9ff73a0d1`
 
-**Note**: Multi-line text fields (Challenges, Actions, Outcomes) should use newlines to separate items.
+### Step 4: Deploy the Worker
+Click "Deploy" - you'll get a URL like: `https://notion-proxy.YOUR-SUBDOMAIN.workers.dev`
 
 ---
 
-## Implementation Steps
+## Cloudflare Worker Code (Copy This)
 
-### Step 1: Store Notion Secret
-Add `NOTION_API_KEY` as an encrypted secret
+```javascript
+export default {
+  async fetch(request, env) {
+    // CORS headers
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    };
 
-### Step 2: Create Edge Function
-Create `supabase/functions/fetch-notion-content/index.ts`:
-- Accepts `type` parameter (blogs or case-studies)
-- Fetches from appropriate Notion database
-- Transforms Notion response to our data structure
-- Returns formatted JSON
+    // Handle preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
+    }
 
-### Step 3: Create React Hooks
-Create custom hooks that wrap React Query:
-- `useNotionBlogs()` - fetches blog posts
-- `useNotionCaseStudies()` - fetches case studies
-- Both handle loading states, caching, and errors
+    const url = new URL(request.url);
+    const type = url.searchParams.get('type'); // 'blogs' or 'case-studies'
 
-### Step 4: Update Pages
-Modify existing pages to use dynamic data:
-- `Blog.tsx` - use `useNotionBlogs()`
-- `BlogPost.tsx` - use `useNotionBlogs()` and find by slug
-- `CaseStudies.tsx` - use `useNotionCaseStudies()`
-- `CaseStudyDetail.tsx` - use `useNotionCaseStudies()` and find by slug
-- `BlogPreviewSection.tsx` - use `useNotionBlogs()` for homepage preview
+    if (!type || !['blogs', 'case-studies'].includes(type)) {
+      return new Response(JSON.stringify({ error: 'Invalid type parameter' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const databaseId = type === 'blogs' 
+      ? env.BLOG_DATABASE_ID 
+      : env.CASE_STUDIES_DATABASE_ID;
+
+    try {
+      // Build filter for published items
+      const filter = {
+        property: 'Status',
+        select: { equals: 'Published' },
+      };
+
+      // Build sorts (newest first for blogs)
+      const sorts = type === 'blogs' 
+        ? [{ property: 'Published Date', direction: 'descending' }]
+        : [];
+
+      const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.NOTION_API_KEY}`,
+          'Notion-Version': '2022-06-28',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ filter, sorts }),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        return new Response(JSON.stringify({ error: 'Notion API error', details: error }), {
+          status: response.status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const data = await response.json();
+      
+      // Transform Notion response to our format
+      const items = data.results.map(page => {
+        if (type === 'blogs') {
+          return transformBlog(page);
+        } else {
+          return transformCaseStudy(page);
+        }
+      });
+
+      return new Response(JSON.stringify(items), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+
+    } catch (error) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+  },
+};
+
+// Helper to extract text from Notion rich text
+function getRichText(property) {
+  if (!property?.rich_text?.length) return '';
+  return property.rich_text.map(t => t.plain_text).join('');
+}
+
+// Helper to get title
+function getTitle(property) {
+  if (!property?.title?.length) return '';
+  return property.title.map(t => t.plain_text).join('');
+}
+
+// Transform blog page
+function transformBlog(page) {
+  const props = page.properties;
+  return {
+    id: page.id,
+    slug: getRichText(props.Slug) || page.id,
+    title: getTitle(props.Title),
+    excerpt: getRichText(props.Excerpt),
+    content: getRichText(props.Content),
+    featuredImage: props['Featured Image']?.url || props['Featured Image']?.files?.[0]?.file?.url || '',
+    category: props.Category?.select?.name || '',
+    author: {
+      name: getRichText(props.Author) || 'Aditya Chatterjee',
+    },
+    publishedDate: props['Published Date']?.date?.start || new Date().toISOString().split('T')[0],
+    readingTime: getRichText(props['Reading Time']) || '5 min read',
+  };
+}
+
+// Transform case study page
+function transformCaseStudy(page) {
+  const props = page.properties;
+  
+  // Split multi-line text into arrays
+  const splitLines = (text) => text.split('\n').map(s => s.trim()).filter(Boolean);
+  
+  return {
+    id: getRichText(props.ID) || page.id,
+    slug: getRichText(props.Slug) || page.id,
+    icon: props.Icon?.select?.name || 'Building2',
+    industry: getRichText(props.Industry),
+    company: getRichText(props.Company),
+    title: getTitle(props.Title),
+    context: getRichText(props.Context),
+    challenge: splitLines(getRichText(props.Challenges)),
+    approach: getRichText(props.Approach),
+    actions: splitLines(getRichText(props.Actions)),
+    outcomes: splitLines(getRichText(props.Outcomes)),
+    proves: getRichText(props['What This Proves']),
+    featuredImage: props['Featured Image']?.url || props['Featured Image']?.files?.[0]?.file?.url,
+  };
+}
+```
 
 ---
 
-## Files to Create
+## Files to Create in Lovable
 
 | File | Purpose |
 |------|---------|
-| `supabase/functions/fetch-notion-content/index.ts` | Edge Function to fetch from Notion |
-| `supabase/config.toml` | Configure the edge function |
-| `src/hooks/useNotionContent.ts` | React Query hooks for fetching content |
+| `src/hooks/useNotionContent.ts` | React Query hooks for fetching from Cloudflare Worker |
 
-## Files to Modify
+## Files to Modify in Lovable
 
 | File | Changes |
 |------|---------|
-| `src/pages/Blog.tsx` | Use `useNotionBlogs()` instead of static import |
-| `src/pages/BlogPost.tsx` | Use `useNotionBlogs()` for single post |
-| `src/pages/CaseStudies.tsx` | Use `useNotionCaseStudies()` |
-| `src/pages/CaseStudyDetail.tsx` | Use `useNotionCaseStudies()` for single study |
-| `src/components/BlogPreviewSection.tsx` | Use `useNotionBlogs()` |
-| `src/components/CaseStudiesSection.tsx` | Use `useNotionCaseStudies()` |
+| `src/pages/Blog.tsx` | Use `useNotionBlogs()` hook with fallback to static data |
+| `src/pages/BlogPost.tsx` | Use dynamic data with fallback |
+| `src/pages/CaseStudies.tsx` | Use `useNotionCaseStudies()` hook with fallback |
+| `src/pages/CaseStudyDetail.tsx` | Use dynamic data with fallback |
+| `src/components/BlogPreviewSection.tsx` | Use dynamic data for homepage preview |
+| `src/components/CaseStudiesSection.tsx` | Use dynamic data for homepage section |
 
 ---
 
-## Edge Function Details
+## React Hooks Implementation
 
-The Edge Function will:
+The `useNotionContent.ts` hook will:
 
-1. **Authenticate** with Notion using your API key
-2. **Query** the appropriate database based on the `type` parameter
-3. **Filter** to only return items with Status = "Published"
-4. **Sort** by Published Date (newest first for blogs)
-5. **Transform** Notion's complex response format to our simple interfaces
-6. **Handle** errors gracefully with meaningful messages
+1. **Fetch from Cloudflare Worker** using the worker URL
+2. **Cache with React Query** (5-minute stale time)
+3. **Fall back to static data** if the API fails
+4. **Provide loading and error states** for UI feedback
 
-### Notion API Specifics
-- Uses `@notionhq/client` for type-safe API calls
-- Handles Notion's nested property structure
-- Extracts text from rich text arrays
-- Parses multi-line fields into arrays
+Example usage in components:
+```typescript
+const { data: blogs, isLoading, error } = useNotionBlogs();
+// Falls back to static blogPosts if API fails
+```
 
 ---
 
-## Fallback Strategy
+## Configuration
 
-Keep the static data files as fallbacks:
-- If Notion API fails, show cached/static data
-- Display loading skeletons while fetching
-- Show error message if both fail
+You'll need to provide your Cloudflare Worker URL after deployment. The implementation will use an environment-friendly approach where:
 
----
-
-## Caching Strategy
-
-React Query configuration:
-- `staleTime`: 5 minutes (data considered fresh)
-- `cacheTime`: 30 minutes (keep in memory)
-- Automatic refetch on window focus (optional)
-
-This reduces API calls while keeping content relatively fresh.
+1. During development: Uses static data files
+2. In production: Fetches from Cloudflare Worker with static fallback
 
 ---
 
-## Testing After Implementation
+## Notion Database Property Names
 
-1. Add test content to your Notion databases
-2. Verify the Edge Function returns correct data
-3. Check blog listing page loads dynamically
-4. Verify case studies page loads dynamically
-5. Test individual detail pages
-6. Confirm homepage previews work
+Make sure your Notion databases use these exact property names:
+
+**Blog Database:**
+- Title (Title type)
+- Slug (Text)
+- Excerpt (Text)
+- Content (Text)
+- Featured Image (URL or Files)
+- Category (Select: Fintech, Growth Strategy, Leadership)
+- Author (Text)
+- Published Date (Date)
+- Reading Time (Text)
+- Status (Select: Published, Draft)
+
+**Case Studies Database:**
+- Title (Title type)
+- ID (Text)
+- Slug (Text)
+- Icon (Select: Building2, GraduationCap, Globe)
+- Industry (Text)
+- Company (Text)
+- Context (Text)
+- Challenges (Text - each item on new line)
+- Approach (Text)
+- Actions (Text - each item on new line)
+- Outcomes (Text - each item on new line)
+- What This Proves (Text)
+- Featured Image (URL or Files)
+- Status (Select: Published, Draft)
 
 ---
 
-## Setting Up Your Notion Databases
+## Implementation Order
 
-If you haven't already set up your Notion databases with the exact properties:
+1. Create the `useNotionContent.ts` hook with placeholder Worker URL
+2. Update all pages to use the hooks with fallback logic
+3. You deploy the Cloudflare Worker externally
+4. Update the Worker URL in the code
+5. Test end-to-end with your Notion content
 
-### For Blog Database:
-1. Create properties matching the table above
-2. Add a "Status" select with "Published" and "Draft" options
-3. Add a test blog post with Status = "Published"
+---
 
-### For Case Studies Database:
-1. Create properties matching the table above
-2. For Challenges/Actions/Outcomes, put each item on a new line
-3. Add a test case study with Status = "Published"
+## Free Tier Limits (Very Generous)
+
+Cloudflare Workers free tier includes:
+- 100,000 requests/day
+- No credit card required
+- Global edge deployment (fast everywhere)
+
+For a portfolio site, you'll likely use less than 1% of this limit.
 
