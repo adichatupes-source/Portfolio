@@ -186,13 +186,11 @@ function transformCaseStudy(page) {
 
 ---
 
-## Files to Create in Lovable
 
 | File | Purpose |
 |------|---------|
 | `src/hooks/useNotionContent.ts` | React Query hooks for fetching from Cloudflare Worker |
 
-## Files to Modify in Lovable
 
 | File | Changes |
 |------|---------|
