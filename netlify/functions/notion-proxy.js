@@ -2,9 +2,9 @@ const { Client } = require('@notionhq/client');
 
 exports.handler = async function(event, context) {
   // Get secrets from environment variables
-  const NOTION_TOKEN = process.env.notion_integration_token;
-  const BLOG_DB_ID = process.env.notion_blog_datasource_id;
-  const CASESTUDIES_DB_ID = process.env.notion_casestudies_datasource_id;
+  const NOTION_TOKEN = process.env.NOTION_INTEGRATION_TOKEN;
+  const BLOG_DB_ID = process.env.NOTION_BLOGPOSTS_DATASOURCE_ID;
+  const CASESTUDIES_DB_ID = process.env.NOTION_CASESTUDIES_DATASOURCE_ID;
 
   if (!NOTION_TOKEN || !BLOG_DB_ID || !CASESTUDIES_DB_ID) {
     return {

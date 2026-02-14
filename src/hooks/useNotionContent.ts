@@ -7,7 +7,7 @@ import { caseStudies as staticCaseStudies, CaseStudy } from '@/data/caseStudies'
 // ============================================================
 // Use your Netlify function endpoint for live Notion data
 // Example: https://your-site-name.netlify.app/.netlify/functions/notion-proxy
-const WORKER_URL = 'https://your-site-name.netlify.app/.netlify/functions/notion-proxy';
+const WORKER_URL = 'https://clickszy.com/.netlify/functions/notion-proxy';
 
 // ============================================================
 // TYPES
