@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useContactModal } from './ContactModalContext';
 
 const navLinks = [
   { href: '#services', label: 'What I Do', isAnchor: true },
@@ -14,7 +15,9 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isHomePage = location.pathname === '/';
+  const { openModal } = useContactModal();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,8 +29,9 @@ export function Header() {
 
   const scrollToSection = (href: string) => {
     if (!isHomePage) {
-      // Navigate to home page with hash
-      window.location.href = '/' + href;
+      // Use router navigation to home with scroll target state
+      navigate('/', { state: { scrollTarget: href } });
+      setIsMobileMenuOpen(false);
       return;
     }
     const element = document.querySelector(href);
@@ -36,6 +40,8 @@ export function Header() {
     }
     setIsMobileMenuOpen(false);
   };
+
+
 
   return (
     <motion.header
@@ -75,13 +81,17 @@ export function Header() {
                   key={link.href}
                   to={link.href}
                   className="nav-link"
+                  onClick={() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    setIsMobileMenuOpen(false);
+                  }}
                 >
                   {link.label}
                 </Link>
               )
             ))}
             <button
-              onClick={() => scrollToSection('#contact')}
+              onClick={openModal}
               className="bg-cta text-cta-foreground px-6 py-2.5 rounded-md text-sm font-medium transition-all duration-300 hover:bg-warm-accent-hover hover:shadow-md"
             >
               Start a Conversation
@@ -131,8 +141,11 @@ export function Header() {
                   <Link
                     key={link.href}
                     to={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
                     className="block w-full text-left px-4 py-2 text-foreground hover:bg-secondary rounded-md transition-colors"
+                    onClick={() => {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      setIsMobileMenuOpen(false);
+                    }}
                   >
                     {link.label}
                   </Link>
@@ -140,7 +153,7 @@ export function Header() {
               ))}
               <div className="px-4 pt-2">
                 <button
-                  onClick={() => scrollToSection('#contact')}
+                  onClick={openModal}
                   className="w-full bg-cta text-cta-foreground px-6 py-3 rounded-md text-sm font-medium transition-all duration-300 hover:bg-warm-accent-hover"
                 >
                   Start a Conversation

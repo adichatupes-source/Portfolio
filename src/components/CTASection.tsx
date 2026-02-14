@@ -1,14 +1,14 @@
 import { motion } from 'framer-motion';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { Mail, Linkedin, ArrowRight } from 'lucide-react';
-import { useState } from 'react';
 import { ElfsightContactForm } from './ElfsightContactForm';
 import { ContactFormModal } from './ContactFormModal';
+import { useContactModal } from './ContactModalContext';
 
 
 export function CTASection() {
   const { ref, isVisible } = useScrollAnimation<HTMLElement>();
-  const [showForm, setShowForm] = useState(false);
+  const { open, openModal, closeModal } = useContactModal();
 
   return (
     <section id="contact" ref={ref} className="section-padding bg-background">
@@ -37,7 +37,7 @@ export function CTASection() {
             <button
               type="button"
               className="inline-flex items-center gap-3 btn-primary text-lg"
-              onClick={() => setShowForm(true)}
+              onClick={openModal}
             >
               Start a Conversation
               <ArrowRight className="w-5 h-5" />
@@ -57,10 +57,7 @@ export function CTASection() {
             </p>
           </motion.div>
 
-          {/* Modal for Elfsight Contact Form */}
-          <ContactFormModal open={showForm} onClose={() => setShowForm(false)}>
-            {showForm && <ElfsightContactForm key={showForm ? 'open' : 'closed'} />}
-          </ContactFormModal>
+
 
           {/* Contact Links */}
           <motion.div
