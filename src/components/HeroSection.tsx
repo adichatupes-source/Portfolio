@@ -1,13 +1,18 @@
 import { motion } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
+import { useContactModal } from './ContactModalContext';
 
 export function HeroSection() {
+  const { openModal } = useContactModal();
+
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+
 
   return (
     <section className="min-h-screen flex items-center justify-center relative bg-gradient-to-b from-background to-secondary/30 pt-20">
@@ -63,7 +68,7 @@ export function HeroSection() {
             className="flex flex-col sm:flex-row gap-4"
           >
             <button
-              onClick={() => scrollToSection('#contact')}
+              onClick={openModal}
               className="btn-primary text-center"
             >
               Start a Conversation
