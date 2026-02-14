@@ -1,0 +1,7 @@
+{
+  "name": "notion-functions",
+  "version": "1.0.0",
+  "dependencies": {
+    "@notionhq/client": "^5.9.0"
+  }
+}
