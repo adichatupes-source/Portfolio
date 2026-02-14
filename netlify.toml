@@ -1,6 +1,0 @@
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["@notionhq/client"]
-
-[build.environment]
-  NODE_VERSION = "16"
