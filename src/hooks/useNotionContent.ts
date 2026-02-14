@@ -5,9 +5,9 @@ import { caseStudies as staticCaseStudies, CaseStudy } from '@/data/caseStudies'
 // ============================================================
 // CONFIGURATION
 // ============================================================
-// Replace this with your deployed Cloudflare Worker URL
-// Example: https://notion-proxy.your-subdomain.workers.dev
-const WORKER_URL = '';
+// Use your Netlify function endpoint for live Notion data
+// Example: https://your-site-name.netlify.app/.netlify/functions/notion-proxy
+const WORKER_URL = 'https://your-site-name.netlify.app/.netlify/functions/notion-proxy';
 
 // ============================================================
 // TYPES
