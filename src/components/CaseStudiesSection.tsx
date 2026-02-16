@@ -33,7 +33,7 @@ export function CaseStudiesSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="heading-section text-primary mb-4">Signature Case Studies</h2>
+          <h2 className="heading-section text-primary mb-4">Selected Results</h2>
           <p className="text-body text-slate max-w-2xl mx-auto">
             Proof of impact through structured storytelling. Each case follows: Context → Challenge → Approach → Actions → Outcomes.
           </p>

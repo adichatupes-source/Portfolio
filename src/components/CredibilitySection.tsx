@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { Users, Briefcase } from 'lucide-react';
 
 const metrics = [
-  { value: '21+', label: 'Years Experience' },
-  { value: '2x', label: 'Lead Growth' },
-  { value: '57%', label: 'CAC Reduction' },
-  { value: '12mo', label: 'Break-Even' },
-  { value: '100K+', label: 'Leads Scaled' },
+  { value: '$X Mn+', label: 'pipeline generated' },
+  { value: '$X Mn+', label: 'marketing spend managed' },
+  { value: '10+', label: 'markets across India, Middle East, and APAC' },
+  { icon: Users, label: 'Teams of 8–10 members built and led' },
+  { icon: Briefcase, label: 'Experience across B2B SaaS, Fintech, and Higher Education' },
 ];
 
 const companies = [
@@ -67,7 +68,7 @@ export function CredibilitySection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="heading-section mb-4">Track Record</h2>
+          <h2 className="heading-section mb-4">Growth Impact</h2>
           <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
             Over two decades, I've built and scaled growth engines across education, fintech, SaaS, and global services.
           </p>
@@ -80,22 +81,29 @@ export function CredibilitySection() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8 mb-16"
         >
-          {metrics.map((metric, index) => (
-            <motion.div
-              key={metric.label}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={isVisible ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
-              className="text-center"
-            >
-              <div className="text-3xl md:text-4xl font-serif font-bold text-cta mb-1">
-                {metric.value}
-              </div>
-              <div className="text-sm text-primary-foreground/70 uppercase tracking-wider">
-                {metric.label}
-              </div>
-            </motion.div>
-          ))}
+          {metrics.map((metric, index) => {
+            const Icon = metric.icon;
+            return (
+              <motion.div
+                key={metric.label}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={isVisible ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
+                className="text-center bg-primary/90 rounded-lg p-6 shadow-sm flex flex-col items-center min-h-[140px] justify-center"
+              >
+                {metric.value ? (
+                  <div className="text-3xl md:text-4xl font-serif font-bold text-cta mb-1">
+                    {metric.value}
+                  </div>
+                ) : Icon ? (
+                  <Icon className="w-8 h-8 text-cta mb-1" />
+                ) : null}
+                <div className={`text-base font-medium text-primary-foreground/90 uppercase tracking-wider ${!metric.value ? 'mt-2' : ''}`}>
+                  {metric.label}
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
         {/* Company Logos */}

@@ -21,10 +21,10 @@ export function CTASection() {
         >
           {/* Main CTA */}
           <h2 className="heading-display text-primary mb-4">
-            Looking to build or fix your growth engine?
+            Need predictable pipeline, not more campaigns?
           </h2>
           <p className="text-xl text-slate mb-10">
-            Let's talk.
+            I work with a limited number of companies each quarter.
           </p>
 
           {/* Primary Button */}
@@ -39,7 +39,7 @@ export function CTASection() {
               className="inline-flex items-center gap-3 btn-primary text-lg"
               onClick={openModal}
             >
-              Start a Conversation
+              Book a 30-min Strategy Call
               <ArrowRight className="w-5 h-5" />
             </button>
             {/* WhatsApp chat is now always available as a floating button via Elfsight. Optionally, you can add a note or a link: */}
@@ -52,12 +52,24 @@ export function CTASection() {
             >
               Chat on WhatsApp
             </a>
-            <p className="text-sm text-muted-foreground mt-4">
+            {/* <p className="text-sm text-muted-foreground mt-4">
               Calendar booking coming soon • Currently scheduling via email
-            </p>
+            </p> */}
           </motion.div>
 
 
+
+          {/* Badges above contact links */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="flex flex-wrap justify-center gap-2 mb-6"
+          >
+            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">Available for Fractional CMO</span>
+            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">Growth Consulting</span>
+            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">GTM Projects</span>
+          </motion.div>
 
           {/* Contact Links */}
           <motion.div

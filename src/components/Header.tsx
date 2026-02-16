@@ -94,7 +94,7 @@ export function Header() {
               onClick={openModal}
               className="bg-cta text-cta-foreground px-6 py-2.5 rounded-md text-sm font-medium transition-all duration-300 hover:bg-warm-accent-hover hover:shadow-md"
             >
-              Start a Conversation
+              Book a Strategy Call
             </button>
           </div>
 
@@ -156,7 +156,7 @@ export function Header() {
                   onClick={openModal}
                   className="w-full bg-cta text-cta-foreground px-6 py-3 rounded-md text-sm font-medium transition-all duration-300 hover:bg-warm-accent-hover"
                 >
-                  Start a Conversation
+                  Book a Strategy Call
                 </button>
               </div>
             </div>

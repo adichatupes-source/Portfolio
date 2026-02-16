@@ -13,6 +13,7 @@ import { ContactFormModal } from '@/components/ContactFormModal';
 import { ElfsightContactForm } from '@/components/ElfsightContactForm';
 import { Footer } from '@/components/Footer';
 import { useContactModal } from '@/components/ContactModalContext';
+import { WhoIWorkWithSection } from '@/components/WhoIWorkWithSection';
 
 const Index = () => {
   const location = useLocation();
@@ -70,6 +71,7 @@ const Index = () => {
       </ContactFormModal>
       <main>
         <HeroSection />
+        <WhoIWorkWithSection />
         <ServicesSection />
         <CaseStudiesSection />
         <PhilosophySection />

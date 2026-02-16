@@ -37,7 +37,7 @@ export function HeroSection() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="heading-display text-primary mb-6"
           >
-            Building predictable revenue engines for growing businesses.
+            I help B2B and EdTech companies build predictable revenue engines.
           </motion.h1>
 
           {/* Sub-headline */}
@@ -47,7 +47,7 @@ export function HeroSection() {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="text-body text-slate max-w-2xl mb-4"
           >
-            21+ years across B2B, SaaS, Fintech & Education — helping founders fix funnels, reduce CAC, and scale demand with clarity and discipline.
+            Fractional CMO for growth-stage companies that need pipeline, not more marketing activity. I work across GTM strategy, demand generation, and growth infrastructure to drive measurable revenue.
           </motion.p>
 
           {/* Credibility Line */}
@@ -71,7 +71,7 @@ export function HeroSection() {
               onClick={openModal}
               className="btn-primary text-center"
             >
-              Start a Conversation
+              Book a Strategy Call
             </button>
             <button
               onClick={() => scrollToSection('#case-studies')}
@@ -79,6 +79,19 @@ export function HeroSection() {
             >
               View Case Studies
             </button>
+          </motion.div>
+
+          {/* CTA Badges (now below CTAs) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.6 }}
+            className="flex flex-wrap gap-2 mt-6 mb-6"
+          >
+            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">$X Mn+ pipeline generated</span>
+            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">$X Mn+ ad spend managed</span>
+            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">10+ markets</span>
+            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">Teams built and scaled (0–10+)</span>
           </motion.div>
         </div>
 

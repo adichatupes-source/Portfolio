@@ -78,7 +78,7 @@ export function PhilosophySection() {
         >
           <div className="text-center mb-8">
             <h3 className="font-serif text-2xl font-semibold text-foreground mb-2">
-              The Growth Framework
+              My Operating Model
             </h3>
             <p className="text-sm text-slate">
               Explore each stage of the funnel to see my approach

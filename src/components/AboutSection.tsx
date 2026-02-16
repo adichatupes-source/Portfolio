@@ -24,7 +24,7 @@ export function AboutSection() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-body text-slate mb-6 leading-relaxed"
             >
-              I work with companies at moments where growth matters — launches, scale-ups, turnarounds, and inflection points. My role is to bring structure, clarity, and execution discipline to growth — helping teams focus on what actually moves revenue.
+              I’m a growth and marketing leader with 21+ years of experience building revenue engines for B2B, Fintech, and Higher Education companies.
             </motion.p>
 
             <motion.p
@@ -33,7 +33,7 @@ export function AboutSection() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-body text-slate mb-6 leading-relaxed"
             >
-              I typically partner with founders and leadership teams who want marketing to behave like a business function, not an experiment. Whether it's building from scratch, fixing what's broken, or scaling what's working — I approach every engagement with the same rigor and accountability I'd expect as a stakeholder.
+              I’ve worked with organizations like IDP, AECC, and multiple funded startups to launch and scale demand generation programs, build high-performing teams, and implement CRM, automation, and attribution systems.
             </motion.p>
 
             <motion.p
@@ -42,7 +42,7 @@ export function AboutSection() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-body text-slate leading-relaxed"
             >
-              After 21+ years across B2B, SaaS, Fintech, and Education, I've learned that sustainable growth comes from systems, not heroics. The best marketing teams I've built understand the "why" behind every metric, not just the "what."
+              Today, I work with a limited number of companies as a Fractional CMO and growth advisor.
             </motion.p>
           </div>
 
