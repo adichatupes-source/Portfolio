@@ -10,8 +10,10 @@ export function BlogPreviewSection() {
   const { ref, isVisible } = useScrollAnimation<HTMLElement>();
   const { data: blogPosts = [], isLoading } = useNotionBlogs();
   
-  // Get the 3 most recent blog posts
-  const latestPosts = blogPosts.slice(0, 3);
+  // Filter to only valid and published blog posts
+  const validPosts = blogPosts.filter(post => post.title && post.slug && post.status === 'Publish');
+  // Get the 3 most recent valid blog posts
+  const latestPosts = validPosts.slice(0, 3);
 
   return (
     <section ref={ref} className="section-padding bg-background">

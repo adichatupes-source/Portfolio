@@ -18,7 +18,11 @@ const iconMap: Record<string, React.ElementType> = {
 
 export default function CaseStudies() {
   const { data: caseStudies = [], isLoading } = useNotionCaseStudies();
-  
+
+
+  // Only show case studies with title, slug, and status 'Published'
+  const validStudies = caseStudies.filter(study => study.title && study.slug && study.status === 'Published');
+
   const {
     currentPage,
     totalPages,
@@ -27,7 +31,7 @@ export default function CaseStudies() {
     hasNextPage,
     hasPreviousPage,
   } = usePagination({
-    items: caseStudies,
+    items: validStudies,
     itemsPerPage: ITEMS_PER_PAGE,
   });
 

@@ -13,7 +13,10 @@ const POSTS_PER_PAGE = 6;
 
 export default function Blog() {
   const { data: blogPosts = [], isLoading } = useNotionBlogs();
-  
+
+  // Only use posts with both title, slug, and status 'Publish'
+  const validPosts = blogPosts.filter(post => post.title && post.slug && post.status === 'Publish');
+
   const {
     currentPage,
     totalPages,
@@ -22,7 +25,7 @@ export default function Blog() {
     hasNextPage,
     hasPreviousPage,
   } = usePagination({
-    items: blogPosts,
+    items: validPosts,
     itemsPerPage: POSTS_PER_PAGE,
   });
 
