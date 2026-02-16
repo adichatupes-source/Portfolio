@@ -12,23 +12,23 @@ import {
 const services = [
   {
     icon: Rocket,
-    title: 'Go-To-Market & Growth Strategy',
-    description: 'Designing GTM strategies for new launches, market entry, and scale — aligning positioning, channels, messaging, and revenue goals.',
+    title: 'Fractional CMO Leadership',
+    description: 'Own the marketing function end-to-end: GTM strategy, budget planning, team building, vendor management, and executive-level reporting.',
   },
   {
     icon: Target,
-    title: 'Demand & Acquisition Engines',
-    description: 'Building full-funnel acquisition systems across paid, organic, lifecycle, and partnerships that deliver consistent, high-quality demand.',
+    title: 'Demand Generation & Pipeline',
+    description: 'Build predictable acquisition through performance marketing, funnel optimization, and CAC to revenue tracking.',
   },
   {
     icon: TrendingUp,
-    title: 'Funnel Architecture & CRO',
-    description: 'Diagnosing broken funnels, redesigning user journeys, and improving conversion efficiency across lead, activation, and revenue stages.',
+    title: 'Growth Infrastructure & Automation',
+    description: 'CRM setup, attribution, marketing automation, lead nurturing, and performance dashboards.',
   },
   {
     icon: BarChart3,
-    title: 'CAC, ROI & Growth Economics',
-    description: 'Bringing discipline to growth through CAC control, attribution clarity, LTV thinking, and performance dashboards.',
+    title: 'Market Entry & Scale',
+    description: 'Positioning, channel testing, and GTM execution for new markets and rapid scaling after validation.',
   },
   {
     icon: Cog,
@@ -55,7 +55,7 @@ export function ServicesSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="heading-section text-primary mb-4">How I Help Companies Grow</h2>
+          <h2 className="heading-section text-primary mb-4">How I Drive Growth</h2>
           <p className="text-body text-slate max-w-2xl mx-auto">
             I work with leadership teams to design, fix, and scale growth systems — not just run campaigns.
           </p>

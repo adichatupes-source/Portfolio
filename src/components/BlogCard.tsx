@@ -44,7 +44,7 @@ export function BlogCard({ post }: BlogCardProps) {
 
           {/* Author and Date */}
           <div className="flex items-center gap-2 text-xs text-muted-foreground mt-auto pt-4 border-t border-border">
-            <span className="font-medium">{post.author.name}</span>
+            <span className="font-medium">{post.author?.name ?? 'Unknown Author'}</span>
             <span>•</span>
             <time dateTime={post.publishedDate}>
               {new Date(post.publishedDate).toLocaleDateString('en-US', {

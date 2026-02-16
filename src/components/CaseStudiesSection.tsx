@@ -16,6 +16,8 @@ export function CaseStudiesSection() {
   const { ref, isVisible } = useScrollAnimation<HTMLElement>();
   const [expandedCase, setExpandedCase] = useState<string | null>(null);
   const { data: caseStudies = [], isLoading } = useNotionCaseStudies();
+  // Only show case studies with title, slug, and status 'Published'
+  const validCaseStudies = caseStudies.filter(study => study.title && study.slug && study.status === 'Published');
 
   const toggleCase = (id: string) => {
     setExpandedCase(expandedCase === id ? null : id);
@@ -31,7 +33,7 @@ export function CaseStudiesSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="heading-section text-primary mb-4">Signature Case Studies</h2>
+          <h2 className="heading-section text-primary mb-4">Selected Results</h2>
           <p className="text-body text-slate max-w-2xl mx-auto">
             Proof of impact through structured storytelling. Each case follows: Context → Challenge → Approach → Actions → Outcomes.
           </p>
@@ -44,9 +46,8 @@ export function CaseStudiesSection() {
           </div>
         ) : (
           <div className="space-y-6">
-            {caseStudies.map((study, index) => {
+            {validCaseStudies.map((study, index) => {
               const Icon = iconMap[study.icon] || Building2;
-              
               return (
                 <motion.div
                   key={study.id}
@@ -55,6 +56,7 @@ export function CaseStudiesSection() {
                   transition={{ duration: 0.6, delay: index * 0.15 }}
                   className="bg-card rounded-xl border border-border overflow-hidden"
                 >
+                  {/* ...existing card rendering code... */}
                   {/* Case Header */}
                   <button
                     onClick={() => toggleCase(study.id)}
@@ -85,7 +87,6 @@ export function CaseStudiesSection() {
                       <ChevronDown className="w-6 h-6 text-muted-foreground" />
                     </motion.div>
                   </button>
-
                   {/* Expanded Content */}
                   <AnimatePresence>
                     {expandedCase === study.id && (
@@ -109,7 +110,6 @@ export function CaseStudiesSection() {
                                   {study.context}
                                 </p>
                               </div>
-
                               {/* Challenge */}
                               <div>
                                 <h4 className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">
@@ -124,7 +124,6 @@ export function CaseStudiesSection() {
                                   ))}
                                 </ul>
                               </div>
-
                               {/* Approach */}
                               <div>
                                 <h4 className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">
@@ -135,7 +134,6 @@ export function CaseStudiesSection() {
                                 </p>
                               </div>
                             </div>
-
                             {/* Right Column */}
                             <div className="space-y-6">
                               {/* Actions */}
@@ -152,7 +150,6 @@ export function CaseStudiesSection() {
                                   ))}
                                 </ul>
                               </div>
-
                               {/* Outcomes */}
                               <div>
                                 <h4 className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">
@@ -167,7 +164,6 @@ export function CaseStudiesSection() {
                                   ))}
                                 </ul>
                               </div>
-
                               {/* What This Proves */}
                               <div className="bg-primary/5 rounded-lg p-4">
                                 <h4 className="text-sm font-semibold text-primary mb-2">
