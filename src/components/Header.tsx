@@ -57,13 +57,22 @@ export function Header() {
       <nav className="container-wide mx-auto px-6 md:px-12 lg:px-24">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <a 
-            href="#" 
-            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="font-serif text-xl md:text-2xl font-semibold text-primary tracking-tight"
-          >
-            Aditya Chatterjee
-          </a>
+          {isHomePage ? (
+            <a
+              href="#"
+              onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="font-serif text-xl md:text-2xl font-semibold text-primary tracking-tight"
+            >
+              Aditya Chatterjee
+            </a>
+          ) : (
+            <Link
+              to="/"
+              className="font-serif text-xl md:text-2xl font-semibold text-primary tracking-tight"
+            >
+              Aditya Chatterjee
+            </Link>
+          )}
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
