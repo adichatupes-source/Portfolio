@@ -3,10 +3,10 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { Users, Briefcase } from 'lucide-react';
 
 const metrics = [
-  { value: '$X Mn+', label: 'pipeline generated' },
-  { value: '$X Mn+', label: 'marketing spend managed' },
-  { value: '10+', label: 'markets across India, Middle East, and APAC' },
-  { icon: Users, label: 'Teams of 8–10 members built and led' },
+  { value: '$3 Mn+', label: 'pipeline generated' },
+  { value: '$1 Mn+', label: 'marketing spend managed' },
+  { value: '50+', label: 'markets across India, Middle East, and APAC' },
+  { icon: Users, label: 'Teams of 8–100+ members built and led' },
   { icon: Briefcase, label: 'Experience across B2B SaaS, Fintech, and Higher Education' },
 ];
 

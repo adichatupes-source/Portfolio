@@ -15,8 +15,8 @@ export function HeroSection() {
 
 
   return (
-    <section className="min-h-screen flex items-center justify-center relative bg-gradient-to-b from-background to-secondary/30 pt-20">
-      <div className="container-narrow mx-auto px-6 md:px-12 lg:px-24 py-20 md:py-32">
+    <section className="min-h-screen flex items-center justify-center relative bg-gradient-to-b from-background to-secondary/30 pt-4">
+      <div className="container-narrow mx-auto px-6 md:px-12 lg:px-24 py-12 md:py-24">
         <div className="max-w-4xl">
           {/* Credibility Tag */}
           <motion.div
@@ -88,10 +88,10 @@ export function HeroSection() {
             transition={{ duration: 0.7, delay: 0.6 }}
             className="flex flex-wrap gap-2 mt-6 mb-6"
           >
-            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">$X Mn+ pipeline generated</span>
-            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">$X Mn+ ad spend managed</span>
-            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">10+ markets</span>
-            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">Teams built and scaled (0–10+)</span>
+            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">$3 Mn+ pipeline generated</span>
+            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">$1 Mn+ ad spend managed</span>
+            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">50+ markets</span>
+            <span className="badge bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">Teams built and scaled (0–100+)</span>
           </motion.div>
         </div>
 
