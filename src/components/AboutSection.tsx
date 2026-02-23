@@ -66,7 +66,7 @@ export function AboutSection() {
                 Who I Work With
               </h4>
               <p className="text-sm text-slate">
-                Founders, CEOs, and leadership teams at growth-stage companies
+                Clinics, healthcare & professional practices
               </p>
             </div>
             <div className="text-center p-6 bg-card rounded-lg border border-border">
