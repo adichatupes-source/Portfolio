@@ -1,28 +1,9 @@
-
 import { motion } from 'framer-motion';
 import { Building2, GraduationCap, Users, DollarSign } from 'lucide-react';
 
-
 const whoIWorkWith = [
   {
-    icon: Building2,const whoIWorkWith = [
-  {
     icon: Building2,
-    label: 'Service businesses and professional practices',
-  },
-  {
-    icon: GraduationCap,
-    label: 'EdTech and Higher Education organizations',
-  },
-  {
-    icon: Users,
-    label: 'Growth-stage businesses scaling beyond founder-led growth',
-  },
-  {
-    icon: DollarSign,
-    label: 'Businesses investing ₹1L–₹10L/month in marketing',
-  },
-];
     label: 'Service businesses and professional practices',
   },
   {
@@ -52,6 +33,7 @@ export function WhoIWorkWithSection() {
           >
             Who I Work With
           </motion.h2>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -68,7 +50,9 @@ export function WhoIWorkWithSection() {
                   <div className="w-12 h-12 mx-auto mb-4 bg-primary/10 rounded-lg flex items-center justify-center">
                     <Icon className="w-6 h-6 text-primary" />
                   </div>
-                  <span className="text-lg font-medium text-primary">{item.label}</span>
+                  <span className="text-lg font-medium text-primary">
+                    {item.label}
+                  </span>
                 </div>
               );
             })}
