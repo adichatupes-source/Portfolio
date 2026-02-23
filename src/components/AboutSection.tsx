@@ -24,7 +24,7 @@ export function AboutSection() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-body text-slate mb-6 leading-relaxed"
             >
-              I’m a growth and marketing leader with 21+ years of experience building revenue engines for B2B, Fintech, and Higher Education companies.
+              I’m a growth and marketing leader with 21+ years of experience building predictable revenue systems for service businesses, professional practices, and growth-stage companies.
             </motion.p>
 
             <motion.p
@@ -33,7 +33,7 @@ export function AboutSection() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-body text-slate mb-6 leading-relaxed"
             >
-              I’ve worked with organizations like IDP, AECC, and multiple funded startups to launch and scale demand generation programs, build high-performing teams, and implement CRM, automation, and attribution systems.
+              I’ve worked with organizations like IDP, AECC, and multiple funded startups to launch and scale demand generation, build high-performing teams, and implement CRM, automation, and attribution systems that drive measurable growth.
             </motion.p>
 
             <motion.p
@@ -42,7 +42,7 @@ export function AboutSection() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-body text-slate leading-relaxed"
             >
-              Today, I work with a limited number of companies as a Fractional CMO and growth advisor.
+              Today, I work with a limited number of businesses as a Fractional CMO and growth advisor, helping them generate consistent pipeline, improve marketing ROI, and scale sustainably.
             </motion.p>
           </div>
 
