@@ -30,16 +30,7 @@ const services = [
   title: 'Market Entry & Scale',
   description: 'Positioning, channel testing, and GTM execution to validate new markets and scale what works.',
 },
-  {
-    icon: Cog,
-    title: 'Growth Infrastructure & Automation',
-    description: 'Setting up CRM, marketing automation, analytics, and reporting frameworks that enable scale without chaos.',
-  },
-  {
-    icon: Users,
-    title: 'Leadership & Team Enablement',
-    description: 'Acting as a fractional Head of Growth / Marketing — leading teams, agencies, and stakeholders with clear priorities and accountability.',
-  },
+
 ];
 
 export function ServicesSection() {
