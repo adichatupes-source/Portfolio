@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 const services = [
-  {
+{
   icon: Rocket,
   title: 'Fractional CMO Leadership',
   description: 'Own the marketing function end-to-end — GTM strategy, growth planning, budget allocation, vendor management, and executive-level reporting.',
@@ -30,7 +30,6 @@ const services = [
   title: 'Market Entry & Scale',
   description: 'Positioning, channel testing, and GTM execution to validate new markets and scale what works.',
 },
-
 ];
 
 export function ServicesSection() {
