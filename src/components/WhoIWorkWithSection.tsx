@@ -23,19 +23,19 @@ const whoIWorkWith = [
     label: 'Businesses investing ₹1L–₹10L/month in marketing',
   },
 ];
-    label: 'B2B SaaS companies (Seed to Series B)',
+    label: 'Service businesses and professional practices',
   },
   {
     icon: GraduationCap,
-    label: 'EdTech and Higher Education organizations',
+    label: 'Healthcare, education, and local service providers',
   },
   {
     icon: Users,
-    label: 'Services businesses scaling beyond founder-led growth',
+    label: 'Growth-stage businesses scaling beyond founder-led growth',
   },
   {
     icon: DollarSign,
-    label: 'Companies investing $10K–$150K/month in marketing',
+    label: 'Businesses investing ₹1L–₹10L/month in marketing',
   },
 ];
 
