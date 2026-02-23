@@ -37,7 +37,7 @@ export function HeroSection() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="heading-display text-primary mb-6"
           >
-            I help B2B and EdTech companies build predictable revenue engines.
+            I help businesses turn marketing into a predictable revenue engine.
           </motion.h1>
 
           {/* Sub-headline */}
