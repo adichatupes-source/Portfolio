@@ -74,7 +74,7 @@ export function AboutSection() {
                 Industries
               </h4>
               <p className="text-sm text-slate">
-                B2B SaaS, Fintech, EdTech, and professional services
+                Healthcare, professional services, education, B2B, and growth-focused service businesses
               </p>
             </div>
           </motion.div>
