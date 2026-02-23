@@ -5,7 +5,24 @@ import { Building2, GraduationCap, Users, DollarSign } from 'lucide-react';
 
 const whoIWorkWith = [
   {
+    icon: Building2,const whoIWorkWith = [
+  {
     icon: Building2,
+    label: 'Service businesses and professional practices',
+  },
+  {
+    icon: GraduationCap,
+    label: 'EdTech and Higher Education organizations',
+  },
+  {
+    icon: Users,
+    label: 'Growth-stage businesses scaling beyond founder-led growth',
+  },
+  {
+    icon: DollarSign,
+    label: 'Businesses investing ₹1L–₹10L/month in marketing',
+  },
+];
     label: 'B2B SaaS companies (Seed to Series B)',
   },
   {
