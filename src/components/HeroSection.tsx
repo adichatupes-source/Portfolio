@@ -37,7 +37,7 @@ export function HeroSection() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="heading-display text-primary mb-6"
           >
-            I help businesses turn marketing into a predictable revenue engine.
+            I help businesses generate predictable pipeline and revenue without wasting money on random marketing.
           </motion.h1>
 
           {/* Sub-headline */}
@@ -47,7 +47,7 @@ export function HeroSection() {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="text-body text-slate max-w-2xl mb-4"
           >
-            Fractional CMO for growth-stage companies that need pipeline, not more marketing activity. I work across GTM strategy, demand generation, and growth infrastructure to drive measurable revenue.
+            Growth strategy and acquisition systems for service businesses, professional practices, and growth-stage companies that want consistent leads and measurable ROI.
           </motion.p>
 
           {/* Credibility Line */}
