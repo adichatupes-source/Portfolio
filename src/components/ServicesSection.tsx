@@ -11,25 +11,25 @@ import {
 
 const services = [
   {
-    icon: Rocket,
-    title: 'Fractional CMO Leadership',
-    description: 'Own the marketing function end-to-end: GTM strategy, budget planning, team building, vendor management, and executive-level reporting.',
-  },
-  {
-    icon: Target,
-    title: 'Demand Generation & Pipeline',
-    description: 'Build predictable acquisition through performance marketing, funnel optimization, and CAC to revenue tracking.',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Growth Infrastructure & Automation',
-    description: 'CRM setup, attribution, marketing automation, lead nurturing, and performance dashboards.',
-  },
-  {
-    icon: BarChart3,
-    title: 'Market Entry & Scale',
-    description: 'Positioning, channel testing, and GTM execution for new markets and rapid scaling after validation.',
-  },
+  icon: Rocket,
+  title: 'Fractional CMO Leadership',
+  description: 'Own the marketing function end-to-end — GTM strategy, growth planning, budget allocation, vendor management, and executive-level reporting.',
+},
+{
+  icon: Target,
+  title: 'Demand Generation & Pipeline',
+  description: 'Build predictable client acquisition through performance marketing, funnel optimization, and full-funnel revenue tracking.',
+},
+{
+  icon: TrendingUp,
+  title: 'Growth Systems & Infrastructure',
+  description: 'CRM, attribution, automation, and reporting systems that turn marketing into a scalable growth engine.',
+},
+{
+  icon: BarChart3,
+  title: 'Market Entry & Scale',
+  description: 'Positioning, channel testing, and GTM execution to validate new markets and scale what works.',
+},
   {
     icon: Cog,
     title: 'Growth Infrastructure & Automation',
