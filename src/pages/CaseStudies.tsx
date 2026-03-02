@@ -61,7 +61,7 @@ export default function CaseStudies() {
                 Case Studies
               </h1>
               <p className="text-body text-slate max-w-2xl">
-                Real growth outcomes from strategy, systems, and execution. Across healthcare, education, B2B, and service businesses — each engagement focused on measurable business outcomes. <br></>
+                Real growth outcomes from strategy, systems, and execution. Across healthcare, education, B2B, and service businesses — each engagement focused on measurable business outcomes. 
                 Each case follows: Context → Challenge → Approach → Actions → Outcomes.
               </p>
             </motion.div>
