@@ -102,7 +102,8 @@ exports.handler = async function(event, context) {
           slug: props['Slug']?.rich_text?.[0]?.plain_text || '',
           title: props['Blog Title']?.title?.[0]?.plain_text || '',
           excerpt,
-          content: excerpt, // Use excerpt as content
+          excerptRichText: props['Excerpt']?.rich_text || [],
+          content: props['Blog Writeup']?.rich_text || '',
           featuredImage,
           category: props['Category']?.select?.name || '',
           author: {
