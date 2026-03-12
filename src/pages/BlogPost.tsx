@@ -8,88 +8,159 @@ import { Badge } from '@/components/ui/badge';
 import { BlogPostSkeleton } from '@/components/ContentSkeleton';
 import { useNotionBlogPost } from '@/hooks/useNotionContent';
 
+// ---- Types ----
+interface NotionTextItem {
+  type: 'text';
+  text: { content: string; link: string | null };
+  annotations: {
+    bold: boolean;
+    italic: boolean;
+    strikethrough: boolean;
+    underline: boolean;
+    code: boolean;
+    color: string;
+  };
+  plain_text: string;
+  href: string | null;
+}
+
+// ---- Annotated Span ----
+function AnnotatedSpan({ item }: { item: NotionTextItem }) {
+  const { bold, italic, strikethrough, underline, code, color } = item.annotations;
+
+  const colorMap: Record<string, string> = {
+    red: 'text-red-500', blue: 'text-blue-500', green: 'text-green-500',
+    yellow: 'text-yellow-500', orange: 'text-orange-500', purple: 'text-purple-500',
+    pink: 'text-pink-500', gray: 'text-gray-500', default: '',
+  };
+
+  // Preserve content exactly — never trim
+  let node: React.ReactNode = item.text.content;
+
+  if (code)          node = <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono border border-border">{node}</code>;
+  if (bold)          node = <strong className="font-semibold text-foreground">{node}</strong>;
+  if (italic)        node = <em className="italic">{node}</em>;
+  if (strikethrough) node = <s>{node}</s>;
+  if (underline)     node = <u>{node}</u>;
+
+  const colorClass = color !== 'default' ? (colorMap[color] ?? '') : '';
+if (item.href) {
+    return (
+      <a
+        href={item.href}
+        className={`underline text-primary hover:opacity-80 ${colorClass}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {node}
+      </a>
+    );
+  }
+
+  return <span className={colorClass || undefined}>{node}</span>;
+}
+
+// ---- Full Notion Rich Text Renderer ----
+function NotionRichTextRenderer({ content }: { content: NotionTextItem[] }) {
+  if (!content?.length) return null;
+
+  // Flatten into tokens split by \n
+  type Token = { type: 'span'; item: NotionTextItem } | { type: 'newline' };
+  const tokens: Token[] = [];
+
+  content.forEach((item) => {
+    const parts = item.text.content.split('\n');
+    parts.forEach((part, index) => {
+      if (index > 0) tokens.push({ type: 'newline' });
+      if (part !== '') {
+        tokens.push({
+          type: 'span',
+          item: { ...item, text: { ...item.text, content: part }, plain_text: part },
+        });
+      }
+    });
+  });
+
+  // Group tokens into lines
+  const lines: NotionTextItem[][] = [];
+  let currentLine: NotionTextItem[] = [];
+  tokens.forEach((token) => {
+    if (token.type === 'newline') {
+      lines.push(currentLine);
+      currentLine = [];
+    } else {
+      currentLine.push(token.item);
+    }
+  });
+  if (currentLine.length) lines.push(currentLine);
+
+  return (
+    <div className="space-y-1">
+      {lines.map((line, lineIndex) => {
+        // Empty line = paragraph spacing
+        if (line.length === 0) {
+          return <div key={lineIndex} className="h-4" />;
+        }
+
+        const lineText = line.map((i) => i.plain_text).join('');
+        const isBullet = lineText.startsWith('•');
+        const isHeading = line.every((i) => i.annotations.bold) && line.length > 0;
+
+        if (isBullet) {
+          const bulletContent = line.map((item, i) => ({
+            ...item,
+            text: {
+              ...item.text,
+              content: i === 0 ? item.text.content.replace(/^•\s*/, '') : item.text.content,
+            },
+            plain_text: i === 0 ? item.plain_text.replace(/^•\s*/, '') : item.plain_text,
+          }));
+
+          return (
+            <div key={lineIndex} className="flex items-start gap-3 pl-2 py-0.5">
+              <span className="text-primary mt-2 text-xs flex-shrink-0">●</span>
+              {/* No flex-wrap — inline spans preserve spacing */}
+              <p className="text-base text-slate leading-relaxed" style={{ textAlign: 'justify' }}>
+                {bulletContent.map((item, i) => <AnnotatedSpan key={i} item={item} />)}
+              </p>
+            </div>
+          );
+        }
+
+        if (isHeading) {
+          return (
+            <h2
+              key={lineIndex}
+              className="font-serif text-2xl md:text-3xl font-semibold text-foreground mb-2 pt-4"
+            >
+              {line.map((item, i) => (
+                <span key={i}>{item.text.content}</span>
+              ))}
+            </h2>
+          );
+        }
+
+        // Regular paragraph — no flex, inline spans, justified
+        return (
+          <p
+            key={lineIndex}
+            className="text-base text-slate leading-relaxed mb-1"
+            style={{ textAlign: 'justify' }}
+          >
+            {line.map((item, i) => <AnnotatedSpan key={i} item={item} />)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+// ---- Blog Post Page ----
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
   const { data: post, isLoading, notFound } = useNotionBlogPost(slug);
 
-  // Convert markdown-like content to paragraphs
-  const renderContent = (content: string) => {
-    const lines = content.trim().split('\n');
-    const elements: JSX.Element[] = [];
-    let key = 0;
-
-    lines.forEach((line) => {
-      const trimmedLine = line.trim();
-      
-      if (!trimmedLine) {
-        return;
-      }
-      
-      if (trimmedLine.startsWith('# ')) {
-        elements.push(
-          <h1 key={key++} className="font-serif text-3xl md:text-4xl font-semibold text-foreground mt-8 mb-4 first:mt-0">
-            {trimmedLine.replace('# ', '')}
-          </h1>
-        );
-      } else if (trimmedLine.startsWith('## ')) {
-        elements.push(
-          <h2 key={key++} className="font-serif text-2xl md:text-3xl font-semibold text-foreground mt-8 mb-4">
-            {trimmedLine.replace('## ', '')}
-          </h2>
-        );
-      } else if (trimmedLine.startsWith('### ')) {
-        elements.push(
-          <h3 key={key++} className="font-serif text-xl md:text-2xl font-semibold text-foreground mt-6 mb-3">
-            {trimmedLine.replace('### ', '')}
-          </h3>
-        );
-      } else if (trimmedLine.startsWith('- **')) {
-        const match = trimmedLine.match(/- \*\*(.+?)\*\*: (.+)/);
-        if (match) {
-          elements.push(
-            <li key={key++} className="text-slate leading-relaxed ml-4 mb-2">
-              <strong className="text-foreground">{match[1]}</strong>: {match[2]}
-            </li>
-          );
-        }
-      } else if (trimmedLine.startsWith('- ')) {
-        elements.push(
-          <li key={key++} className="text-slate leading-relaxed ml-4 mb-2">
-            {trimmedLine.replace('- ', '')}
-          </li>
-        );
-      } else if (trimmedLine.match(/^\d+\. /)) {
-        elements.push(
-          <li key={key++} className="text-slate leading-relaxed ml-4 mb-2 list-decimal">
-            {trimmedLine.replace(/^\d+\. /, '')}
-          </li>
-        );
-      } else if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**')) {
-        elements.push(
-          <p key={key++} className="text-foreground font-semibold leading-relaxed mb-4">
-            {trimmedLine.replace(/\*\*/g, '')}
-          </p>
-        );
-      } else {
-        // Process inline bold
-        const parts = trimmedLine.split(/(\*\*.*?\*\*)/);
-        const processedParts = parts.map((part, i) => {
-          if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={i}>{part.replace(/\*\*/g, '')}</strong>;
-          }
-          return part;
-        });
-        
-        elements.push(
-          <p key={key++} className="text-slate leading-relaxed mb-4">
-            {processedParts}
-          </p>
-        );
-      }
-    });
-
-    return elements;
-  };
+  const isRichContent = Array.isArray(post?.content);
 
   if (isLoading) {
     return (
@@ -110,14 +181,13 @@ export default function BlogPost() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main>
         {/* Hero */}
         <section className="pt-32 pb-12 bg-gradient-to-b from-primary/5 to-background">
           <div className="max-w-4xl mx-auto px-6 md:px-12">
-            {/* Back Link */}
-            <Link 
-              to="/blog" 
+            <Link
+              to="/blog"
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -129,20 +199,15 @@ export default function BlogPost() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {/* Category */}
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className="mb-4 bg-primary/10 text-primary hover:bg-primary/20"
               >
                 {post.category}
               </Badge>
 
-              {/* Title */}
-              <h1 className="heading-display text-primary mb-6">
-                {post.title}
-              </h1>
+              <h1 className="heading-display text-primary mb-6">{post.title}</h1>
 
-              {/* Meta */}
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4" />
@@ -192,9 +257,29 @@ export default function BlogPost() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="max-w-3xl mx-auto px-6 md:px-12 prose prose-slate"
+            className="max-w-3xl mx-auto px-6 md:px-12"
           >
-            {renderContent(post.content)}
+            {/* Excerpt as styled intro */}
+            {post.excerpt && (
+              <p
+                className="text-lg text-slate leading-relaxed font-medium"
+                style={{ textAlign: 'justify' }}
+              >
+                {post.excerpt}
+              </p>
+            )}
+
+            {/* Rich Notion Content */}
+            {isRichContent ? (
+              <NotionRichTextRenderer content={post.content as unknown as NotionTextItem[]} />
+            ) : (
+              <p
+                className="text-base text-slate leading-relaxed"
+                style={{ textAlign: 'justify' }}
+              >
+                {post.content as unknown as string}
+              </p>
+            )}
           </motion.article>
         </section>
       </main>
