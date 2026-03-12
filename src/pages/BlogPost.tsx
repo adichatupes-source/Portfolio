@@ -11,7 +11,10 @@ import { useNotionBlogPost } from '@/hooks/useNotionContent';
 // ---- Types ----
 interface NotionTextItem {
   type: 'text';
-  text: { content: string; link: string | null };
+  text: {
+    content: string;
+    link: { url: string } | null; // ✅ fixed from string | null
+  };
   annotations: {
     bold: boolean;
     italic: boolean;
@@ -44,11 +47,30 @@ function AnnotatedSpan({ item }: { item: NotionTextItem }) {
   if (underline)     node = <u>{node}</u>;
 
   const colorClass = color !== 'default' ? (colorMap[color] ?? '') : '';
-if (item.href) {
+
+  // ✅ Check text.link.url first, fallback to href
+  const linkUrl = item.text.link?.url || item.href;
+
+  if (linkUrl) {
+    // ✅ Internal link — use React Router Link
+    const isInternal = linkUrl.startsWith('/') || linkUrl.includes('clickszy.com');
+
+    if (isInternal) {
+      return (
+        <Link
+          to={linkUrl.replace(/^https?:\/\/clickszy\.com/, '')}
+          className={`underline text-primary hover:opacity-80 transition-opacity ${colorClass}`}
+        >
+          {node}
+        </Link>
+      );
+    }
+
+    // ✅ External link
     return (
       <a
-        href={item.href}
-        className={`underline text-primary hover:opacity-80 ${colorClass}`}
+        href={linkUrl}
+        className={`underline text-primary hover:opacity-80 transition-opacity ${colorClass}`}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -119,7 +141,6 @@ function NotionRichTextRenderer({ content }: { content: NotionTextItem[] }) {
           return (
             <div key={lineIndex} className="flex items-start gap-3 pl-2 py-0.5">
               <span className="text-primary mt-2 text-xs flex-shrink-0">●</span>
-              {/* No flex-wrap — inline spans preserve spacing */}
               <p className="text-base text-slate leading-relaxed" style={{ textAlign: 'justify' }}>
                 {bulletContent.map((item, i) => <AnnotatedSpan key={i} item={item} />)}
               </p>
@@ -185,7 +206,7 @@ export default function BlogPost() {
       <main>
         {/* Hero */}
         <section className="pt-32 pb-12 bg-gradient-to-b from-primary/5 to-background">
-          <div className="max-w-4xl mx-auto px-6 md:px-12">
+          <div className=" mx-auto px-6 md:px-24">
             <Link
               to="/blog"
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
@@ -233,7 +254,7 @@ export default function BlogPost() {
 
         {/* Featured Image */}
         <section className="pb-8">
-          <div className="max-w-4xl mx-auto px-6 md:px-12">
+          <div className=" mx-auto px-6 md:px-32">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -257,12 +278,12 @@ export default function BlogPost() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="max-w-3xl mx-auto px-6 md:px-12"
+            className="mx-auto px-6 md:px-24"
           >
             {/* Excerpt as styled intro */}
             {post.excerpt && (
               <p
-                className="text-lg text-slate leading-relaxed font-medium"
+                className="text-lg text-slate leading-relaxed font-medium mb-8 "
                 style={{ textAlign: 'justify' }}
               >
                 {post.excerpt}
