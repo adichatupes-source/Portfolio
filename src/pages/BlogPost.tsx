@@ -206,7 +206,7 @@ export default function BlogPost() {
       <main>
         {/* Hero */}
         <section className="pt-32 pb-12 bg-gradient-to-b from-primary/5 to-background">
-          <div className=" mx-auto px-6 md:px-24">
+          <div className=" mx-auto px-6 md:px-40">
             <Link
               to="/blog"
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
@@ -254,7 +254,7 @@ export default function BlogPost() {
 
         {/* Featured Image */}
         <section className="pb-8">
-          <div className=" mx-auto px-6 md:px-32">
+          <div className=" mx-auto px-6 md:px-44">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -278,7 +278,7 @@ export default function BlogPost() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mx-auto px-6 md:px-24"
+            className="mx-auto px-6 md:px-40"
           >
             {/* Excerpt as styled intro */}
             {post.excerpt && (
